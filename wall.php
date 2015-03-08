@@ -12,10 +12,10 @@ if(!isset($_SESSION['email']))  //User cannot visit page unless logged in
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Email Validator</title>
-	<link rel="stylesheet" type="text/css" href="wall.css">
+	<title>The Wall</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" type="text/css" href="wall.css">
 	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
 	<script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
 </head>
@@ -26,27 +26,29 @@ if(!isset($_SESSION['email']))  //User cannot visit page unless logged in
 <div class="col-md-3"></div>
 
 <div class="col-md-6">
-	<form action="process.php" method="post">
-		<input type="submit" name="Logout" value="logoff">
+
+<h3>Welcome <?= $_SESSION['firstname'] ?> <?=$_SESSION['lastname'] ?>!</h3>
+	
+	
+	<form action="process.php" method="post" class="logout">
+		<input type="submit" name="Logout" value="logoff" class="logout">
 		<input type="hidden" name="action" value="logoff">
 	</form>
-
-<h3>Welcome <?= $_SESSION['firstname'] ?><?=$_SESSION['lastname'] ?>!</h3>
-
 <!-- LOG OUT -->
 
-<div class="col-md-3"></div>
 
 <!-- POST MESSAGE -->
 <form action="process.php" method="post">
-<textarea rows="3" cols="50" name="message"></textarea>
+<textarea rows="3" cols="75" name="message"></textarea>
 <input type="submit" class="submit">
 <input type="hidden" name="action" value="addmessage">
 </form>
+</div>
+
 <div class="col-md-3"></div>
 </div>
 
-</div>
+
 <?php
 retrieve_post(); //RUNS QUERY FOR MESSAGE BOARD. DOES NOT RETRIEVE COMMENTS
 	foreach($_SESSION['messagelog'] as $messages)
@@ -78,14 +80,21 @@ retrieve_post(); //RUNS QUERY FOR MESSAGE BOARD. DOES NOT RETRIEVE COMMENTS
 				<div class="comment">
 					<p><strong><?= $comments['first_name']?> <?= $comments['last_name']?> <?= $comments['created_at']?></strong></p>
 					<p><?= $comments['comment']?></p>
+				<?php
+					if($comments['user_id'] == $_SESSION['user_id'])
+						{?>
+							<form action="process.php" method="post">
+								<input type="submit" value="delete">
+								<input type="hidden" name="deletec" value=<?= $comments['id'] ?>>
+							</form>
+				<?php 
+						}?>
 				</div>	
-
 		<?php
 			} ?>
 				<!-- AREA TO ENTER COMMENTS FOR A MESSAGE. -->
 				<form action="process.php" method="post">
-					<textarea rows="2" cols="50" name="comment">
-					</textarea>
+					<textarea rows="2" cols="70" name="comment"></textarea>
 					<input type="submit" class="submit">
 					<input type="hidden" name="action" value=<?= $messages['id'] ?>>
 				</form>
@@ -96,6 +105,7 @@ retrieve_post(); //RUNS QUERY FOR MESSAGE BOARD. DOES NOT RETRIEVE COMMENTS
 
 <?php	
 	} ?>
+</div>
 </div>
 </div>
 

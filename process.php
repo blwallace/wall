@@ -37,8 +37,18 @@ if(isset($_POST['delete']) && $_POST['delete']>=0)
 	delete_message($post);
 }
 
+if(isset($_POST['deletec']) && $_POST['deletec']>=0)
+{	
+	delete_comment($post);
+}
+
 function wall_message($post)  //Takes the input $post and inserts a message into the message table
 {
+	if ($post['message'] == '')
+	{
+		header('location:wall.php');
+		die();
+	}
 	$query1= "INSERT INTO messages (user_id,message,created_at,updated_at) VALUES ('{$_SESSION['user_id']}','{$post['message']}',NOW(),NOW())";
 	run_mysql_query($query1);
 	header('location: wall.php');
@@ -46,7 +56,13 @@ function wall_message($post)  //Takes the input $post and inserts a message into
 }
 
 function wall_comment($post) //Takes the input $post and inserts a comment into the comment table
-{
+{	
+	if ($post['comment'] == '')
+	{
+		header('location:wall.php');
+		die();
+	}
+
 	$query1= "INSERT INTO comments (message_id,user_id,comment,created_at,updated_at) VALUES ('{$_POST['action']}','{$_SESSION['user_id']}','{$post['comment']}',NOW(),NOW())";
 	run_mysql_query($query1);
 	header('location: wall.php');
@@ -64,11 +80,12 @@ function retrieve_post() //runs query to load messages
 
 function retrieve_comment($messageid) //runs query to load comments
 {
-	$query = "SELECT comments.comment, users.first_name, users.last_name, comments.created_at
+	$query = "SELECT comments.comment, users.first_name, users.last_name, comments.created_at, comments.id,comments.user_id
 				FROM comments, users
 				WHERE comments.message_id = $messageid
-				AND users.id = comments.user_id";
-	$_SESSION['commentlog'] = array_reverse(fetch_all($query));
+				AND users.id = comments.user_id
+				and comments.deleted_at IS NULL";
+	$_SESSION['commentlog'] = (fetch_all($query));
 }
 
 
@@ -177,7 +194,7 @@ function delete_message($post)
 
 function delete_comment($post)
 {
-	$query1= "UPDATE `wall`.`messages` SET deleted_at = NOW() WHERE {$post['delete']} = id";
+	$query1= "UPDATE `wall`.`comments` SET deleted_at = NOW() WHERE {$post['deletec']} = id";
 	run_mysql_query($query1);
 	header('location: wall.php');
 }
