@@ -12,15 +12,15 @@ session_start();
 <?php
 
 
-if (!empty($_SESSION['$errors']))
+if (!empty($_SESSION['$errors']))  //If there are errors in registration, display errors
 {
 	foreach($_SESSION['$errors'] as $error) 
 		{echo $error;}
 
-	$_SESSION['$errors']='';
+	$_SESSION['$errors']='';  //Sets errors to an emtpy array in case user refreshed page
 
 }
-else{ $_SESSION['$errors']='';}
+else{ $_SESSION['$errors']='';} //Creates errors variable for session
 ?>
 
 <form action="process.php" method="post">
@@ -35,7 +35,7 @@ else{ $_SESSION['$errors']='';}
 	<h3>Register</h3>
 	<p>First Name: <input type="text" name="firstname"></p>
 	<p>Last Name: <input type="text" name="lastname"></p>
-	<p>Login: <input type="text" name="email"></p>
+	<p>Login Email: <input type="text" name="email"></p>
 	<p>Password: <input type="password" name="password"></p>
 	<p>Confirm Password: <input type="password" name="confirm"></p>	
 	<input type="submit" name="submit">

@@ -1,55 +1,103 @@
 <?php
 include('process.php');
 
-var_dump($_SESSION['commentlog'])
+if(!isset($_SESSION['email']))  //User cannot visit page unless logged in
+{
+	$_SESSION['$errors'][] = "<p>Please login</p>";
+		header('location: index.php');
+		exit;
+}
 ?>
 
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<title>Email Validator</title>
-	<style>
-	</style>
-
+	<link rel="stylesheet" type="text/css" href="wall.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+	<script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
 </head>
 <body>
 
-<p>Welcome <?= $_SESSION['firstname'] ?>!</p>
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-3"></div>
+
+<div class="col-md-6">
+	<form action="process.php" method="post">
+		<input type="submit" name="Logout" value="logoff">
+		<input type="hidden" name="action" value="logoff">
+	</form>
+
+<h3>Welcome <?= $_SESSION['firstname'] ?><?=$_SESSION['lastname'] ?>!</h3>
+
+<!-- LOG OUT -->
+
+<div class="col-md-3"></div>
+
+<!-- POST MESSAGE -->
 <form action="process.php" method="post">
-<input type="submit" name="Logout" value="logoff">
-<input type="hidden" name="action" value="logoff">
-</form>
-<form action="process.php" method="post">
-<textarea rows="4" cols="50" name="message">
-Enter a message</textarea>
-<input type="submit">
+<textarea rows="3" cols="50" name="message"></textarea>
+<input type="submit" class="submit">
 <input type="hidden" name="action" value="addmessage">
 </form>
+<div class="col-md-3"></div>
+</div>
 
+</div>
 <?php
-retrieve_post();
-
+retrieve_post(); //RUNS QUERY FOR MESSAGE BOARD. DOES NOT RETRIEVE COMMENTS
 	foreach($_SESSION['messagelog'] as $messages)
 	{?>
-		<p><?= $messages['message']?> </p>
-		<p><?= $messages['first_name']?> <?= $messages['last_name']?> <?= $messages['created_at']?></p>
-<?php 
+		<div class="row">
+			<div class="col-md-3"></div>
+			<div class="col-md-6">
+				<div class ="message">
+					<div class="post">
+						<p><strong><?= $messages['first_name']?> <?= $messages['last_name']?> <?= $messages['created_at']?></strong></p> <!-- DISPLAYS ORIGINAL NAME -->
+						<p><?= $messages['message']?></p> 
+				<?php
+					if($messages['user_id'] == $_SESSION['user_id'])
+						{?>
+							<form action="process.php" method="post">
+								<input type="submit" value="delete">
+								<input type="hidden" name="delete" value=<?= $messages['id'] ?>>
+							</form>
+				<?php 
+						}?>
+					</div>
+				
+				<!-- DISPLAYS COMMENTS -->
+		<?php
 		retrieve_comment($messages['id']);
-		foreach($_SESSION['commentlog'] as $comments)
-		{ ?>
-		<p><?= $comments['comment']?> </p>
 
-	<?php	}
-?>
-		<form action="process.php" method="post">
-			<textarea rows="2" cols="50" name="comment">
-			Enter a Comment</textarea>
-			<input type="submit">
-			<input type="hidden" name="action" value=<?= $messages['id'] ?>>
-		</form>
+			foreach($_SESSION['commentlog'] as $comments)
+			{?>
+				<div class="comment">
+					<p><strong><?= $comments['first_name']?> <?= $comments['last_name']?> <?= $comments['created_at']?></strong></p>
+					<p><?= $comments['comment']?></p>
+				</div>	
 
-		<hr>
-<?php	} ?>
+		<?php
+			} ?>
+				<!-- AREA TO ENTER COMMENTS FOR A MESSAGE. -->
+				<form action="process.php" method="post">
+					<textarea rows="2" cols="50" name="comment">
+					</textarea>
+					<input type="submit" class="submit">
+					<input type="hidden" name="action" value=<?= $messages['id'] ?>>
+				</form>
+				</div>
+			</div>
+			<div class="col-md-3"></div>
+		</div>	
+
+<?php	
+	} ?>
+</div>
+</div>
 
 </body>
 </html>

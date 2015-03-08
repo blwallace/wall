@@ -4,7 +4,8 @@ include('new-connection.php');
 $post = $_POST;
 $_SESSION['$errors']='';
 
-if(isset($_POST['action']) && $_POST['action']=='login')
+
+if(isset($_POST['action']) && $_POST['action']=='login')  //This redirects post to function. Post must have a hidden value action to login correlation
 {
 	userlogin($post);
 }
@@ -31,48 +32,47 @@ if(isset($_POST['action']) && $_POST['action']>=0)
 	wall_comment($post);
 }
 
-function wall_message($post)
+if(isset($_POST['delete']) && $_POST['delete']>=0)
+{	
+	delete_message($post);
+}
+
+function wall_message($post)  //Takes the input $post and inserts a message into the message table
 {
 	$query1= "INSERT INTO messages (user_id,message,created_at,updated_at) VALUES ('{$_SESSION['user_id']}','{$post['message']}',NOW(),NOW())";
 	run_mysql_query($query1);
-	// $query2 = "SELECT messages.message, messages.created_at, users.first_name, users.last_name FROM messages, users WHERE users.id = messages.user_id";
-	// $_SESSION['messagelog'] = array_reverse(fetch_all($query2));
-	header('location: wall2.php');
+	header('location: wall.php');
 	exit;
 }
 
-function wall_comment($post)
+function wall_comment($post) //Takes the input $post and inserts a comment into the comment table
 {
 	$query1= "INSERT INTO comments (message_id,user_id,comment,created_at,updated_at) VALUES ('{$_POST['action']}','{$_SESSION['user_id']}','{$post['comment']}',NOW(),NOW())";
 	run_mysql_query($query1);
-	// $query2 = "SELECT messages.id, comments.comment, comments.user_id, messages.message, messages.created_at, users.first_name, users.last_name FROM comments, messages, users WHERE users.id = messages.user_id AND messages.id = comments.message_id";
-	// $_SESSION['commentlog'] = array_reverse(fetch_all($query2));
-	header('location: wall2.php');
+	header('location: wall.php');
 	exit;
 }
 
-function retrieve_post()
+function retrieve_post() //runs query to load messages
 {
-	$query2 = "SELECT messages.id, messages.message as message, messages.created_at, users.first_name, users.last_name 
+	$query2 = "SELECT messages.id, messages.message, messages.user_id, messages.created_at, users.first_name, users.last_name 
 				FROM messages, users 
-				WHERE users.id = messages.user_id";
+				WHERE users.id = messages.user_id
+				and messages.deleted_at IS NULL";
 	$_SESSION['messagelog'] = array_reverse(fetch_all($query2));
-
 }
 
-function retrieve_comment($messageid)
+function retrieve_comment($messageid) //runs query to load comments
 {
 	$query = "SELECT comments.comment, users.first_name, users.last_name, comments.created_at
 				FROM comments, users
 				WHERE comments.message_id = $messageid
 				AND users.id = comments.user_id";
 	$_SESSION['commentlog'] = array_reverse(fetch_all($query));
-
-
 }
 
 
-function emailrepeat($post)
+function emailrepeat($post)  //I think this is broken. It's supposed to make sure that emails don't repeat
 {
 
 	$query = "SELECT email FROM users";
@@ -99,7 +99,7 @@ function userlogin($post)
 		$_SESSION['lastname']= $user[0]['last_name'];
 		$_SESSION['email']= $post['email'];
 		$_SESSION['user_id']= $user[0]['id'];
-		header('location: wall2.php');
+		header('location: wall.php');
 		exit;
 	}
 
@@ -168,8 +168,19 @@ function userreg($post)
 	}
 }
 
+function delete_message($post)
+{
+	$query1= "UPDATE `wall`.`messages` SET deleted_at = NOW() WHERE {$post['delete']} = id";
+	run_mysql_query($query1);
+	header('location: wall.php');
+}
 
-
+function delete_comment($post)
+{
+	$query1= "UPDATE `wall`.`messages` SET deleted_at = NOW() WHERE {$post['delete']} = id";
+	run_mysql_query($query1);
+	header('location: wall.php');
+}
 
 
 
