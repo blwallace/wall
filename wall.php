@@ -64,7 +64,7 @@ retrieve_post(); //RUNS QUERY FOR MESSAGE BOARD. DOES NOT RETRIEVE COMMENTS
 					if($messages['user_id'] == $_SESSION['user_id'])
 						{?>
 							<form action="process.php" method="post">
-								<input type="submit" value="delete">
+								<input type="submit" value="delete" class="delete2">
 								<input type="hidden" name="delete" value=<?= $messages['id'] ?>>
 							</form>
 				<?php 
@@ -84,7 +84,7 @@ retrieve_post(); //RUNS QUERY FOR MESSAGE BOARD. DOES NOT RETRIEVE COMMENTS
 					if($comments['user_id'] == $_SESSION['user_id'])
 						{?>
 							<form action="process.php" method="post">
-								<input type="submit" value="delete">
+								<input type="submit" value="delete" class="delete">
 								<input type="hidden" name="deletec" value=<?= $comments['id'] ?>>
 							</form>
 				<?php 
