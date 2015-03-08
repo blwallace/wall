@@ -1,0 +1,52 @@
+.name{
+	padding-left: 150px;
+}
+
+h1{
+	margin-bottom: 50px;
+}
+
+.message{
+	min-width: 450px;
+	border: solid;
+	background-color: #4E9C68;
+	margin:2px;
+}
+
+.post{
+	background-color: #7CBB91;
+	padding:1px 0px 1px;
+}
+
+.post p{
+	background-color: #7CBB91;
+	padding:4px 0px 1px 15px;
+}
+
+
+.comment{
+	margin: 5px 0px 15px 35px;
+
+}
+
+p{
+	margin:8px;
+}
+
+.submit{
+	display:block;
+	margin:5px 0px 2px 10px;
+}
+
+textarea{
+	padding-right: 55px;
+}
+
+form{
+	display: inline-block;
+}
+
+h3{
+	margin: 0px;
+	padding: 0px;
+}
